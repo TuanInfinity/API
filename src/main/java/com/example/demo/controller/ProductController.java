@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ProductDTO;
 import com.example.demo.entity.Product;
 import com.example.demo.repo.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,6 +28,7 @@ import java.util.Optional;
  *
  * @author Tuan Infinity
  */
+@CrossOrigin("http://localhost:4200")
 @RestController // cấu hình đây là 1 controller trả về đối tượng là file JSon;
 @RequestMapping("api/v1/product") // tạo base API cho lớp controller;
 @RequiredArgsConstructor // DI các phụ thuộc vào đối tượng private final giống @Autowired
@@ -33,8 +38,12 @@ public class ProductController {
 
     @GetMapping("get-all")
     public ResponseEntity<?> getAll() {
-
-        return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
+        List<Product> list = repository.findAll();
+        List<ProductDTO> listDTO = new ArrayList<>();
+        for(Product p : list){
+            listDTO.add(ProductDTO.productConvertToProductDTO(p));
+        }
+        return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
     @GetMapping("search/{id}")
